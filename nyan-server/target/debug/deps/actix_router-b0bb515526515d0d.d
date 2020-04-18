@@ -1,0 +1,10 @@
+C:\Users\Schwartza\Desktop\prog2020\rustServer\nyan-server\target\debug\deps\actix_router-b0bb515526515d0d.rmeta: C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src/lib.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src\de.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src\path.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src\resource.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src\router.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src\url.rs
+
+C:\Users\Schwartza\Desktop\prog2020\rustServer\nyan-server\target\debug\deps\actix_router-b0bb515526515d0d.d: C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src/lib.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src\de.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src\path.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src\resource.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src\router.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src\url.rs
+
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src/lib.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src\de.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src\path.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src\resource.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src\router.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-router-0.1.5\src\url.rs:

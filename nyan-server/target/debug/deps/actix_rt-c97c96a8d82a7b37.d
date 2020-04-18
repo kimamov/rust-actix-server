@@ -1,0 +1,11 @@
+C:\Users\Schwartza\Desktop\prog2020\rustServer\nyan-server\target\debug\deps\actix_rt-c97c96a8d82a7b37.rmeta: C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src/lib.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\arbiter.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\builder.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\runtime.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\system.rs
+
+C:\Users\Schwartza\Desktop\prog2020\rustServer\nyan-server\target\debug\deps\libactix_rt-c97c96a8d82a7b37.rlib: C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src/lib.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\arbiter.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\builder.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\runtime.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\system.rs
+
+C:\Users\Schwartza\Desktop\prog2020\rustServer\nyan-server\target\debug\deps\actix_rt-c97c96a8d82a7b37.d: C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src/lib.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\arbiter.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\builder.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\runtime.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\system.rs
+
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src/lib.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\arbiter.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\builder.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\runtime.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\actix-rt-0.2.6\src\system.rs:
