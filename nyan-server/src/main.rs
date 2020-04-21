@@ -29,8 +29,11 @@ async fn main()->io::Result<()> {
             .data(pool.clone())
             .route("/api/", web::get().to(status))
             .route("/api/projects", web::get().to(get_projects))
+            .route("/api/projects", web::post().to(create_project))
+            .route("/api/projectform",web::get().to(project_form))
             .route("/test",web::get().to(p404))
             .route("/",web::get().to(index))
+            
     })
     .bind(format!("{}:{}", config.server.host ,config.server.port))?
     .run()

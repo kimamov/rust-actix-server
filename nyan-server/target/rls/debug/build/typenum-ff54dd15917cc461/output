@@ -1,0 +1,2 @@
+cargo:rustc-env=TYPENUM_BUILD_CONSTS=c:\Users\Schwartza\Desktop\prog2020\rustServer\nyan-server\target\rls\debug\build\typenum-ff54dd15917cc461\out\consts.rs
+cargo:rustc-env=TYPENUM_BUILD_OP=c:\Users\Schwartza\Desktop\prog2020\rustServer\nyan-server\target\rls\debug\build\typenum-ff54dd15917cc461\out\op.rs

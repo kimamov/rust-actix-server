@@ -55,3 +55,20 @@ pub async fn index(req: HttpRequest) -> Result<HttpResponse> {
 pub async fn p404() -> Result<fs::NamedFile> {
     Ok(fs::NamedFile::open("public/index.html")?.set_status_code(StatusCode::NOT_FOUND))
 }
+
+
+pub async fn create_project()->impl Responder{
+    web::HttpResponse::Ok()
+        .json(Status {status: "done".to_string()})
+}
+
+pub async fn project_form(req: HttpRequest) -> Result<HttpResponse> {
+    println!("{:?}", req);
+
+    
+
+    // response
+    Ok(HttpResponse::build(StatusCode::OK)
+        .content_type("text/html; charset=utf-8")
+        .body(include_str!("../public/project_form.html")))
+}

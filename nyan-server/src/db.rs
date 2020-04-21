@@ -4,7 +4,7 @@ use tokio_pg_mapper::FromTokioPostgresRow;
 use std::io;
 
 pub async fn get_projects(client: &Client)->Result<Vec<Project>, io::Error>{
-    let statement=client.prepare("select * from projects where id = 2").await.unwrap();
+    let statement=client.prepare("select * from projects").await.unwrap();
 
     let projects=client.query(&statement, &[])
         .await.expect("Error getting projects")
