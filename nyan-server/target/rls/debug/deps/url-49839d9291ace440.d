@@ -1,0 +1,13 @@
+c:\Users\Schwartza\Desktop\prog2020\rustServer\nyan-server\target\rls\debug\deps\url-49839d9291ace440.rmeta: C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\lib.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\host.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\origin.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\parser.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\path_segments.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\query_encoding.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\slicing.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\form_urlencoded.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\quirks.rs
+
+c:\Users\Schwartza\Desktop\prog2020\rustServer\nyan-server\target\rls\debug\deps\url-49839d9291ace440.d: C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\lib.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\host.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\origin.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\parser.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\path_segments.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\query_encoding.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\slicing.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\form_urlencoded.rs C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\quirks.rs
+
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\lib.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\host.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\origin.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\parser.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\path_segments.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\query_encoding.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\slicing.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\form_urlencoded.rs:
+C:\Users\Schwartza\.cargo\registry\src\github.com-1ecc6299db9ec823\url-2.1.1\src\quirks.rs:

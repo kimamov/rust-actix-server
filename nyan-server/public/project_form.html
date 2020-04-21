@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+        }
+        body{
+            height: 100vh;
+            display: flex;
+            
+        }
+        form{
+            margin: auto;
+            width: 20rem;
+            height: 30rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            background-color: lightgreen;
+            padding: 1rem 2rem;
+        }
+    </style>
+</head>
+<body>
+    <form action="/api/projects" method="post">
+        <input placeholder="name" type="text" name="name" >
+        <label for="gif">gif</label>
+        <input id="gif" type="file" name="" id="gif">
+        <label for="desc">description</label>    
+        <textarea id="desc" name="description"  cols="30" rows="10"></textarea>
+        <input placeholder="homepage" type="url" name="homepage" >
+        <input placeholder="repo" type="url" name="repository" >
+        <label for="image">images</label>
+        <input id="image" type="file" name="images"  multiple>
+        <input type="submit" value="send">
+    </form>
+</body>
+</html>
