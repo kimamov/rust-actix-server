@@ -2,6 +2,8 @@ mod config;
 mod models;
 mod handlers;
 mod db;
+mod multi_part_handler;
+
 
 use actix_web::{HttpServer, App, web};
 use tokio_postgres::NoTls;
@@ -30,12 +32,8 @@ async fn main()->io::Result<()> {
             .route("/api/", web::get().to(status))
             .route("/api/projects", web::get().to(get_projects))
             .route("/api/projects", web::post().to(create_project))
-            /* .route("/api/upload", web::post().to(upload)) */
-            .route("/api/upload", web::post().to(save_file))
-            .route("/api/upload", web::get().to(upload_form))
             .route("/api/projectform",web::get().to(project_form))
             .route("/api/projects", web::post().to(create_project))
-            .route("/api/projectform",web::get().to(project_form))
             .route("/test",web::get().to(p404))
             .route("/",web::get().to(index))
 
