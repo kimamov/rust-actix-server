@@ -1,42 +1,40 @@
 use actix_multipart::{Field, Multipart};
-use actix_web::{web};
+use actix_web::web;
 use futures::StreamExt;
 use serde::{Deserialize, Serialize};
 use std::io::Write;
-use std::{str};
+use std::str;
 
-
+use crate::models::Project;
 
 #[derive(Debug, Clone)]
-pub struct UploadedFiles {
+pub struct UploadedFile {
     pub name: String,
     pub path: String,
 }
-impl UploadedFiles {
-    fn new(filename: &str) -> UploadedFiles {
-        UploadedFiles {
+impl UploadedFile {
+    fn new(filename: &str) -> UploadedFile {
+        UploadedFile {
             name: filename.to_string(),
             path: format!("./files/{}", filename),
         }
     }
-
 }
 
-#[derive(Deserialize, Serialize, Debug)]
-pub struct FormOut {
-    title: String,
-    description: String,
-    count: u32
-}
 
-pub async fn split_payload(payload: &mut Multipart) -> (FormOut, Vec<UploadedFiles>) {
-    let mut files: Vec<UploadedFiles> = Vec::new();
+
+pub async fn split_payload(payload: &mut Multipart) -> Project {
+    let mut files: Vec<String> = Vec::new();
 
     /* fill with default values for now */
-    let mut form : FormOut=FormOut {
-        title: "".to_string(),
+    let mut project: Project = Project {
+        id: None,
+        name: "".to_string(),
         description: "".to_string(),
-        count: 0
+        homepage: "".to_string(),
+        repository: "".to_string(),
+        priority: None,
+        images: None
     };
 
     while let Some(item) = payload.next().await {
@@ -49,56 +47,37 @@ pub async fn split_payload(payload: &mut Multipart) -> (FormOut, Vec<UploadedFil
                 println!("called Inner");
                 let data = chunk.expect("split_payload err chunk");
                 /* convert bytes to string and print it  (just for testing) */
-                if let Ok(s)=str::from_utf8(&data){
-                    println!("{:?}", s);
-                };
 
-                /* all not file fields of your form (feel free to fix this mess) */
-                if name=="title" {
-                    if let Ok(s)=str::from_utf8(&data){
-                        form.title=s.to_string();
-                    }
-
-                }
-                else if name=="description" {
-                    if let Ok(s)=str::from_utf8(&data){
-                        form.description=s.to_string();
-                    }
-                }
-                else if name=="homepage" {
-                    if let Ok(s)=str::from_utf8(&data){
-                        form.description=s.to_string();
-                    }
-                }
-                else if name=="repo" {
-                    if let Ok(s)=str::from_utf8(&data){
-                        form.description=s.to_string();
-                    }
-                }
-                else if name=="count"{
-                    if let Ok(s)=str::from_utf8(&data){
-                        /* bytes to string */
-                        let numstr: String=s.to_string();
-                        /* string to u32 number */
-                        form.count=numstr.parse().expect("not a number");
+                if let Ok(s) = str::from_utf8(&data) {
+                    let data_string = s.to_string();
+                    println!("{:?}", data_string);
+                    /* all not file fields of your form (feel free to fix this mess) */
+                    match name {
+                        "title" => project.name = data_string,
+                        "description" => project.description = data_string,
+                        "homepage" => project.homepage= data_string,
+                        "repository" => project.repository= data_string,
+                        "priority" => project.repository = data_string.parse().expect("not a number"),
+                        _=> println!("invalid field found")
                     };
-                }
+
+                };
             }
         } else {
             match content_type.get_filename() {
                 Some(filename) => {
-                    let file = UploadedFiles::new(filename);
+                    let file = UploadedFile::new(filename); // create new UploadedFiles
                     let file_path = file.path.clone();
                     let mut f = web::block(move || std::fs::File::create(&file_path))
                         .await
-                        .unwrap();
+                        .unwrap();  // create file at path
                     while let Some(chunk) = field.next().await {
                         let data = chunk.unwrap();
                         f = web::block(move || f.write_all(&data).map(|_| f))
                             .await
-                            .unwrap();
+                            .unwrap(); // write data chunks to file
                     }
-                    files.push(file.clone());
+                    files.push(file.name); // form only needs name
                 }
                 None => {
                     println!("file none");
@@ -106,5 +85,6 @@ pub async fn split_payload(payload: &mut Multipart) -> (FormOut, Vec<UploadedFil
             }
         }
     }
-    (form, files)
+    project.images=Some(files);
+    project
 }
