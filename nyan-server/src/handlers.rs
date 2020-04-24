@@ -6,15 +6,18 @@ use actix_files as fs;
 use actix_multipart::Multipart;
 use actix_web::http::StatusCode;
 use actix_web::{
-    web, Error, HttpRequest, HttpResponse, Responder,
+    web, Error, HttpRequest, HttpResponse, Responder, cookie, http,
     Result,
 };
+use actix_identity::{CookieIdentityPolicy, Identity, IdentityService};
+use actix_session::{CookieSession, Session};
 use deadpool_postgres::{Client, Pool};
 use std::borrow::BorrowMut;
 
-pub async fn status() -> impl Responder {
-    web::HttpResponse::Ok().json(Status {
-        status: "UP".to_string(),
+pub async fn status(id: Identity) -> impl Responder {
+
+    HttpResponse::Ok().json(Status {
+        status: id.identity().unwrap_or_else(|| "guest_user".to_owned()),
     })
 }
 
@@ -73,7 +76,7 @@ pub async fn p404() -> Result<fs::NamedFile> {
 }
 
 
-pub async fn log_in(db_pool: web::Data<Pool>)->impl Responder{
+pub async fn log_in(db_pool: web::Data<Pool>, id: Identity)->impl Responder{
     let client: Client = db_pool
         .get()
         .await
@@ -88,9 +91,35 @@ pub async fn log_in(db_pool: web::Data<Pool>)->impl Responder{
         .await;
 
     match result {
-        Ok(user_name) => HttpResponse::Ok().json(user_name),
+        Ok(user_name) =>{
+            /* IdentityService::new(
+                CookieIdentityPolicy::new(&[0; 32])
+                    .name("auth-cookie")
+                    .secure(false)
+                    .max_age(86400) // 1 day in seconds
+            ); */
+            id.remember(user_name.name.to_owned());
+
+            HttpResponse::Ok()
+                /* .cookie(
+                    http::Cookie::build("user_token", "test")
+                        .secure(false)
+                        .max_age(86400) // 1 day in seconds
+                        .finish()
+                ) */
+                .json(user_name)
+               
+                
+        },
         Err(_) => HttpResponse::NotFound()
             .content_type("text/plain")
             .body("Not Found"),
     }
+}
+
+pub async fn log_out(id: Identity)->impl Responder{
+    id.forget();
+    HttpResponse::Ok().json(Status {
+        status: id.identity().unwrap_or_else(|| "guest_user".to_owned()),
+    })
 }
