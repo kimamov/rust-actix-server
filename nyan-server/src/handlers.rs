@@ -1,5 +1,5 @@
 use crate::db;
-use crate::models::Status;
+use crate::models::{Status, User};
 use crate::multi_part_handler::split_payload;
 
 use actix_files as fs;
@@ -70,4 +70,27 @@ pub async fn index(req: HttpRequest) -> Result<HttpResponse> {
 
 pub async fn p404() -> Result<fs::NamedFile> {
     Ok(fs::NamedFile::open("public/index.html")?.set_status_code(StatusCode::NOT_FOUND))
+}
+
+
+pub async fn log_in(db_pool: web::Data<Pool>)->impl Responder{
+    let client: Client = db_pool
+        .get()
+        .await
+        .expect("Error connecting to the database");
+    
+    let user: User=User{
+        id: None,
+        name: Some(String::from("kantemir")),
+        password: Some(String::from("test"))
+    };
+    let result=db::log_in(&client, user)
+        .await;
+
+    match result {
+        Ok(user_name) => HttpResponse::Ok().json(user_name),
+        Err(_) => HttpResponse::NotFound()
+            .content_type("text/plain")
+            .body("Not Found"),
+    }
 }

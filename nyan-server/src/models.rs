@@ -18,12 +18,25 @@ pub struct Project {
     pub images: Option<Vec<String>>,
 }
 
-/* #[derive(Deserialize, Serialize, Debug)]
-pub struct Project {
-    title: String,
-    description: String,
-    homepage: String,
-    repository: String,
-    priority: u32,
-    images: Vec<String>,
-} */
+
+#[derive(Serialize, Deserialize, Debug, PostgresMapper)]
+#[pg_mapper(table = "users")]
+pub struct User {
+    pub id: Option<u32>,
+    pub name: Option<String>,
+    pub password: Option<String>
+}
+
+#[derive(Serialize, Deserialize, Debug, PostgresMapper)]
+#[pg_mapper(table = "users")]
+pub struct UserName {
+    pub name: String
+}
+
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct LogInMessage {
+    pub succes: bool,
+    pub message: String
+}
+
