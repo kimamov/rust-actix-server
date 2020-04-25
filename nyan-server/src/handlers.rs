@@ -1,5 +1,5 @@
 use crate::db;
-use crate::models::{Status, User};
+use crate::models::{Status, User, SearchParams};
 use crate::multi_part_handler::split_payload;
 
 use actix_files as fs;
@@ -22,13 +22,17 @@ pub async fn status(id: Identity) -> impl Responder {
     })
 }
 
-pub async fn get_projects(db_pool: web::Data<Pool>) -> impl Responder {
+pub async fn get_projects(db_pool: web::Data<Pool>, query: web::Query<SearchParams>) -> impl Responder {    
+    match query.limit {
+        Some(data) =>  println!("{}", data),
+        None => println!("nothing found :(")
+    };
     let client: Client = db_pool
         .get()
         .await
         .expect("Error connecting to the database");
 
-    let result = db::get_projects(&client).await;
+    let result = db::get_projects(&client, query.limit, query.offset).await;
 
     match result {
         Ok(projects) => HttpResponse::Ok().json(projects),

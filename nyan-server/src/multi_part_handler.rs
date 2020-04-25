@@ -33,6 +33,7 @@ pub async fn split_payload(payload: &mut Multipart) -> Project {
         description: "".to_string(),
         homepage: "".to_string(),
         repository: "".to_string(),
+        packageLink: None,
         priority: None,
         images: None
     };

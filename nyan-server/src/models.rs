@@ -14,6 +14,7 @@ pub struct Project {
     pub description: String,
     pub homepage: String,
     pub repository: String,
+    pub packageLink: Option<String>,
     pub priority: Option<i16>,
     pub images: Option<Vec<String>>,
 }
@@ -40,3 +41,18 @@ pub struct LogInMessage {
     pub message: String
 }
 
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct SearchParams {
+    pub limit: Option<i64>,
+    pub offset: Option<i64>
+}
+
+impl Default for SearchParams {
+    fn default()->SearchParams {
+        SearchParams {
+            limit: None,
+            offset: None
+        }
+    }
+}
