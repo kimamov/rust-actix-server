@@ -6,11 +6,12 @@ use actix_files as fs;
 use actix_multipart::Multipart;
 use actix_web::http::StatusCode;
 use actix_web::{
-    web, Error, HttpRequest, HttpResponse, Responder, cookie, http,
+    web, HttpRequest, HttpResponse, Responder,
     Result,
 };
-use actix_identity::{CookieIdentityPolicy, Identity, IdentityService};
-use actix_session::{CookieSession, Session};
+use actix_files::NamedFile;
+use std::path::PathBuf;
+use actix_identity::{Identity};
 use deadpool_postgres::{Client, Pool};
 use std::borrow::BorrowMut;
 
@@ -123,3 +124,9 @@ pub async fn log_out(id: Identity)->impl Responder{
         status: id.identity().unwrap_or_else(|| "guest_user".to_owned()),
     })
 }
+
+
+/* pub async fn static_files(req: HttpRequest)->Result<NamedFile>{
+    let path: PathBuf = req.match_info().query("filename").parse().unwrap();
+    Ok(NamedFile::open(path)?)
+} */

@@ -3,12 +3,12 @@ mod db;
 mod handlers;
 mod models;
 mod multi_part_handler;
-use actix_identity::{CookieIdentityPolicy, Identity, IdentityService};
-use actix_session::{CookieSession, Session};
+use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
 use std::io;
 use tokio_postgres::NoTls;
+use actix_files as fs;
 
 /* use crate::models::Status; */
 use crate::handlers::*;
@@ -36,7 +36,7 @@ async fn main() -> io::Result<()> {
             ))
             .data(pool.clone())
             
-            .service(web::scope("/api/")
+            .service(web::scope("/api")
                 .service(web::resource("/projects")
                     .route(web::get().to(get_projects))
                     .route(web::post().to(create_project))
@@ -50,14 +50,20 @@ async fn main() -> io::Result<()> {
                 .service(web::resource("/logout")
                     .route(web::get().to(log_out))
                 )
+                .service(web::resource("/status")
+                    .route(web::get().to(status))
+                )
+                /* static files */
+                /* .service(web::resource("/static/{filename:.*}")
+                    .route(web::get().to(static_files))
+                ) */
+                .service(fs::Files::new("/static", "./files")/* .show_files_listing() */)
                 .default_service(
-                    web::route().to(status)
+                    web::route().to(index)
                 )
             )
-            
 
-            .route("/test", web::get().to(p404))
-            .route("/", web::get().to(index))
+            /* .route("/", web::get().to(index)) */
     })
     .bind(format!("{}:{}", config.server.host, config.server.port))?
     .run()
