@@ -4,7 +4,8 @@ mod handlers;
 mod models;
 mod multi_part_handler;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
-use actix_web::{web, App, HttpServer};
+use actix_web::{web, App, HttpServer, http};
+use actix_cors::Cors;
 use dotenv::dotenv;
 use std::io;
 use tokio_postgres::NoTls;
@@ -28,14 +29,21 @@ async fn main() -> io::Result<()> {
     println!("Hello, world!");
     HttpServer::new(move || {
         App::new()
+            .data(pool.clone())
             .wrap(IdentityService::new(
                 CookieIdentityPolicy::new(&[0; 32])
                     .name("auth-cookie")
                     .secure(false)
                     .max_age(86400) // 1 day in seconds
             ))
-            .data(pool.clone())
-            
+            .wrap(
+                Cors::new() // <- Construct CORS middleware builder
+                  .allowed_origin("http://localhost:3000")
+                  .allowed_methods(vec!["GET", "POST"])
+                  .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+                  .allowed_header(http::header::CONTENT_TYPE)
+                  .max_age(3600)
+                  .finish())
             .service(web::scope("/api")
                 .service(web::resource("/projects")
                     .route(web::get().to(get_projects))
