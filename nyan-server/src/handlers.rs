@@ -134,7 +134,12 @@ pub async fn log_out(id: Identity)->impl Responder{
 } */
 
 pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
-
+    /* for (key, value) in std::env::vars() {
+        println!("{}: {}", key, value);
+    } */
+    let user=std::env::var("MAIL.USER").expect("MAIL.USER must be set in .env");
+    let password=std::env::var("MAIL.PASSWORD").expect("MAIL.PASSWORD must be set in .env");
+    
     let email = Email::builder()
         .to("kantemir.imam@gmail.com")
         .from(params.email.to_string())
@@ -145,8 +150,8 @@ pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
         .unwrap();
 
     let creds = Credentials::new(
-        "monkey@baizuo.online".to_string(),
-        "Xw#jqfNMgVZQD6!".to_string(),
+        user,
+        password,
     );
 
     // Open connection to gmail
@@ -174,46 +179,3 @@ pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
     }
 }
 
-/* pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
-    let client=actix_web::client::Client::default();
-
-    
-    let mut map=HashMap::new();
-
-    map.insert("personalizations", format!("[{{ 
-        to: [{{ 
-            email: {}, 
-            name: {}
-        }}],
-        subject: {}
-    }}]", "kantemir.imam@gmail.com", "kantemir", "work"));
-    
-    map.insert("from", format!("{{
-        email: {},
-        name: {}
-    }}", "kantemir.imamov@googlemail.com", "suc"));
-    
-    map.insert("content", format!("{{
-        message: {}
-    }}", "we did it :)"));
-
-    let response=client.post("https://api.sendgrid.com/v3/mail/send")
-        .header("Bearer", "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")
-        .send_json(&map)
-        .await;
-
-
-    
-    if response.is_ok() {
-        println!("Could not send email: {:?}", params.email);
-        HttpResponse::Ok().json(Status {
-            status: String::from("succesfully send mail")
-        })
-    } else {
-        println!("Could not send email: {:?}", response);
-        HttpResponse::InternalServerError().json(Status {
-            status: String::from("could not send mail! :(")
-        })
-    }    
-    
-} */

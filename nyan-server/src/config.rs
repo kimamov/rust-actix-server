@@ -8,9 +8,18 @@ pub struct ServerConfig {
 }
 
 #[derive(Deserialize)]
+pub struct MailConfig {
+    pub user: String,
+    pub password: String,
+}
+
+
+
+#[derive(Deserialize)]
 pub struct Config {
     pub server: ServerConfig,
     pub pg: deadpool_postgres::Config,
+    pub mail: MailConfig
 }
 
 impl Config {
