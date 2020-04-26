@@ -15,6 +15,12 @@ use std::collections::HashMap;
 use actix_identity::{Identity};
 use deadpool_postgres::{Client, Pool};
 use std::borrow::BorrowMut;
+use lettre_email::Email;
+use lettre::smtp::authentication::Credentials;
+use lettre::{SmtpClient, Transport};
+
+
+
 
 
 pub async fn status(id: Identity) -> impl Responder {
@@ -127,50 +133,48 @@ pub async fn log_out(id: Identity)->impl Responder{
     Ok(NamedFile::open(path)?)
 } */
 
-/* pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
-    let email = SendableEmail::new(
-        Envelope::new(
-            Some(EmailAddress::new(params.email.to_string()).unwrap()),
-            vec![EmailAddress::new("kantemir.imam@gmail.com".to_string()).unwrap()]
-        ).unwrap(),
-        "work".to_string(),
-        params.message.to_string().into_bytes(),
+pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
+
+    let email = Email::builder()
+        .to("kantemir.imam@gmail.com")
+        .from(params.email.to_string())
+        .subject("subject")
+        .html("<h1>Hi there</h1>")
+        .text(params.message.to_string())
+        .build()
+        .unwrap();
+
+    let creds = Credentials::new(
+        "monkey@baizuo.online".to_string(),
+        "Xw#jqfNMgVZQD6!".to_string(),
     );
-    
+
+    // Open connection to gmail
+    let mut mailer = SmtpClient::new_simple("smtp.ionos.de")
+        .unwrap()
+        .credentials(creds)
+        .transport();
+
+    // Send the email
+    let result = mailer.send(email.into());
 
    
-    
-
-    // Connect to a remote server on a custom port
-    let mut mailer = SmtpClient::new_simple("smtp.ionos.de").unwrap()
-        // Set the name sent during EHLO/HELO, default is `localhost`
-        .hello_name(ClientId::Domain("kantemir imamov".to_string()))
-        // Add credentials for authentication
-        .credentials(Credentials::new("monkey@baizuo.online".to_string(), "Xw#jqfNMgVZQD6!".to_string()))
-        // Enable SMTPUTF8 if the server supports it
-        .smtp_utf8(true)
-        // Configure expected authentication mechanism
-        .authentication_mechanism(Mechanism::Plain)
-        // Enable connection reuse
-        .connection_reuse(ConnectionReuseParameters::ReuseUnlimited).transport();
-
-    let result = mailer.send(email);
 
 
     if result.is_ok() {
-        println!("Could not send email: {:?}", params.email);
+        /* println!("Could not send email: {:?}", params.email); */
         HttpResponse::Ok().json(Status {
             status: String::from("succesfully send mail")
         })
     } else {
-        println!("Could not send email: {:?}", result);
+        /* println!("Could not send email: {:?}", result); */
         HttpResponse::InternalServerError().json(Status {
             status: String::from("could not send mail! :(")
         })
     }
-} */
+}
 
-pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
+/* pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
     let client=actix_web::client::Client::default();
 
     
@@ -197,21 +201,9 @@ pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
         .header("Bearer", "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")
         .send_json(&map)
         .await;
-        /* .map_err(Error::from)?; */
-        /* openssl = { version = "0.10", features = ["v110"] } */
 
 
-    /* match response {
-        Ok(data) =>HttpResponse::Ok().json(Status {
-            status: String::from("succes")
-        }),
-        _ =>{
-            println!("{}", data);
-            HttpResponse::InternalServerError().json(Status {
-                status: String::from("could not send mail! :(")
-            })
-        } 
-    } */
+    
     if response.is_ok() {
         println!("Could not send email: {:?}", params.email);
         HttpResponse::Ok().json(Status {
@@ -224,4 +216,4 @@ pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
         })
     }    
     
-}
+} */
