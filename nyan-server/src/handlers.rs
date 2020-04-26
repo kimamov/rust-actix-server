@@ -31,10 +31,10 @@ pub async fn status(id: Identity) -> impl Responder {
 }
 
 pub async fn get_projects(db_pool: web::Data<Pool>, query: web::Query<SearchParams>) -> impl Responder {    
-    match query.limit {
+    /* match query.limit {
         Some(data) =>  println!("{}", data),
         None => println!("nothing found :(")
-    };
+    }; */
     let client: Client = db_pool
         .get()
         .await
@@ -48,18 +48,18 @@ pub async fn get_projects(db_pool: web::Data<Pool>, query: web::Query<SearchPara
     }
 }
 
-pub async fn project_form(req: HttpRequest) -> Result<HttpResponse> {
+/* pub async fn project_form(req: HttpRequest) -> Result<HttpResponse> {
     println!("{:?}", req);
 
     // response
     Ok(HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
         .body(include_str!("../public/project_form.html")))
-}
+} */
 
 pub async fn create_project(mut payload: Multipart, db_pool: web::Data<Pool>) -> impl Responder {
     let project = split_payload(payload.borrow_mut()).await;
-    println!("bytes={:#?}", project);
+    /* println!("bytes={:#?}", project); */
 
     let client: Client = db_pool
         .get()
@@ -77,16 +77,21 @@ pub async fn create_project(mut payload: Multipart, db_pool: web::Data<Pool>) ->
 
 /* #[get("/welcome")] */
 pub async fn index(req: HttpRequest) -> Result<HttpResponse> {
-    println!("{:?}", req);
+    /* println!("{:?}", req); */
     // response
     Ok(HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
         .body(include_str!("../public/index.html")))
 }
 
-pub async fn p404() -> Result<fs::NamedFile> {
+/* pub async fn p404() -> Result<fs::NamedFile> {
     Ok(fs::NamedFile::open("public/index.html")?.set_status_code(StatusCode::NOT_FOUND))
+} */
+
+pub async fn react_app() -> Result<fs::NamedFile> {
+    Ok(fs::NamedFile::open("frontend/index.html")?.set_status_code(StatusCode::OK))
 }
+
 
 
 pub async fn log_in(db_pool: web::Data<Pool>, id: Identity)->impl Responder{

@@ -43,15 +43,15 @@ pub async fn split_payload(payload: &mut Multipart) -> Project {
         let content_type = field.content_disposition().unwrap();
         let name = content_type.get_name().unwrap();
         if name != "images" {
-            println!("called outer loop");
+            /* println!("called outer loop"); */
             while let Some(chunk) = field.next().await {
-                println!("called Inner");
+                /* println!("called Inner"); */
                 let data = chunk.expect("split_payload err chunk");
                 /* convert bytes to string and print it  (just for testing) */
 
                 if let Ok(s) = str::from_utf8(&data) {
                     let data_string = s.to_string();
-                    println!("{:?}", data_string);
+                    /* println!("{:?}", data_string); */
                     /* all not file fields of your form (feel free to fix this mess) */
                     match name {
                         "title" => project.name = data_string,

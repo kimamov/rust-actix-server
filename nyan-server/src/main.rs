@@ -75,7 +75,9 @@ async fn main() -> io::Result<()> {
                 )
             )
 
-            /* .route("/", web::get().to(index)) */
+            /* .service(fs::Files::new("/", "./frontend").index_file("index.html")) */
+
+
     })
     .bind(format!("{}:{}", config.server.host, config.server.port))?
     .run()
