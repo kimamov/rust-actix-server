@@ -1,11 +1,11 @@
 use crate::models::{Project, User, UserName};
 use deadpool_postgres::Client;
-use tokio_postgres;
+/* use tokio_postgres; */
 use std::io;
 use tokio_pg_mapper::FromTokioPostgresRow;
 
 pub async fn get_projects(client: &Client, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<Project>, io::Error> {
-    let statement = client.prepare("select * from projects limit $1 offset $2").await.unwrap();
+    let statement = client.prepare("select * from projects order by priority desc limit $1 offset $2").await.unwrap();
 
     let projects = client
         .query(&statement, &[&limit, &offset])

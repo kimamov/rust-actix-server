@@ -56,3 +56,10 @@ impl Default for SearchParams {
         }
     }
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Mail {
+    pub email: String,
+    pub message: String,
+    pub name: Option<String>,
+}

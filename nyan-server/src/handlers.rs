@@ -1,5 +1,5 @@
 use crate::db;
-use crate::models::{Status, User, SearchParams};
+use crate::models::{Status, User, SearchParams, Mail};
 use crate::multi_part_handler::split_payload;
 
 use actix_files as fs;
@@ -9,11 +9,13 @@ use actix_web::{
     web, HttpRequest, HttpResponse, Responder,
     Result,
 };
-use actix_files::NamedFile;
-use std::path::PathBuf;
+/* use actix_files::NamedFile;
+use std::path::PathBuf; */
+use std::collections::HashMap;
 use actix_identity::{Identity};
 use deadpool_postgres::{Client, Pool};
 use std::borrow::BorrowMut;
+
 
 pub async fn status(id: Identity) -> impl Responder {
 
@@ -97,21 +99,11 @@ pub async fn log_in(db_pool: web::Data<Pool>, id: Identity)->impl Responder{
 
     match result {
         Ok(user_name) =>{
-            /* IdentityService::new(
-                CookieIdentityPolicy::new(&[0; 32])
-                    .name("auth-cookie")
-                    .secure(false)
-                    .max_age(86400) // 1 day in seconds
-            ); */
+
             id.remember(user_name.name.to_owned());
 
             HttpResponse::Ok()
-                /* .cookie(
-                    http::Cookie::build("user_token", "test")
-                        .secure(false)
-                        .max_age(86400) // 1 day in seconds
-                        .finish()
-                ) */
+
                 .json(user_name)
                
                 
@@ -134,3 +126,102 @@ pub async fn log_out(id: Identity)->impl Responder{
     let path: PathBuf = req.match_info().query("filename").parse().unwrap();
     Ok(NamedFile::open(path)?)
 } */
+
+/* pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
+    let email = SendableEmail::new(
+        Envelope::new(
+            Some(EmailAddress::new(params.email.to_string()).unwrap()),
+            vec![EmailAddress::new("kantemir.imam@gmail.com".to_string()).unwrap()]
+        ).unwrap(),
+        "work".to_string(),
+        params.message.to_string().into_bytes(),
+    );
+    
+
+   
+    
+
+    // Connect to a remote server on a custom port
+    let mut mailer = SmtpClient::new_simple("smtp.ionos.de").unwrap()
+        // Set the name sent during EHLO/HELO, default is `localhost`
+        .hello_name(ClientId::Domain("kantemir imamov".to_string()))
+        // Add credentials for authentication
+        .credentials(Credentials::new("monkey@baizuo.online".to_string(), "Xw#jqfNMgVZQD6!".to_string()))
+        // Enable SMTPUTF8 if the server supports it
+        .smtp_utf8(true)
+        // Configure expected authentication mechanism
+        .authentication_mechanism(Mechanism::Plain)
+        // Enable connection reuse
+        .connection_reuse(ConnectionReuseParameters::ReuseUnlimited).transport();
+
+    let result = mailer.send(email);
+
+
+    if result.is_ok() {
+        println!("Could not send email: {:?}", params.email);
+        HttpResponse::Ok().json(Status {
+            status: String::from("succesfully send mail")
+        })
+    } else {
+        println!("Could not send email: {:?}", result);
+        HttpResponse::InternalServerError().json(Status {
+            status: String::from("could not send mail! :(")
+        })
+    }
+} */
+
+pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
+    let client=actix_web::client::Client::default();
+
+    
+    let mut map=HashMap::new();
+
+    map.insert("personalizations", format!("[{{ 
+        to: [{{ 
+            email: {}, 
+            name: {}
+        }}],
+        subject: {}
+    }}]", "kantemir.imam@gmail.com", "kantemir", "work"));
+    
+    map.insert("from", format!("{{
+        email: {},
+        name: {}
+    }}", "kantemir.imamov@googlemail.com", "suc"));
+    
+    map.insert("content", format!("{{
+        message: {}
+    }}", "we did it :)"));
+
+    let response=client.post("https://api.sendgrid.com/v3/mail/send")
+        .header("Bearer", "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")
+        .send_json(&map)
+        .await;
+        /* .map_err(Error::from)?; */
+        /* openssl = { version = "0.10", features = ["v110"] } */
+
+
+    /* match response {
+        Ok(data) =>HttpResponse::Ok().json(Status {
+            status: String::from("succes")
+        }),
+        _ =>{
+            println!("{}", data);
+            HttpResponse::InternalServerError().json(Status {
+                status: String::from("could not send mail! :(")
+            })
+        } 
+    } */
+    if response.is_ok() {
+        println!("Could not send email: {:?}", params.email);
+        HttpResponse::Ok().json(Status {
+            status: String::from("succesfully send mail")
+        })
+    } else {
+        println!("Could not send email: {:?}", response);
+        HttpResponse::InternalServerError().json(Status {
+            status: String::from("could not send mail! :(")
+        })
+    }    
+    
+}
