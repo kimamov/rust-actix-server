@@ -76,7 +76,7 @@ pub async fn create_project(mut payload: Multipart, db_pool: web::Data<Pool>) ->
 }
 
 /* #[get("/welcome")] */
-pub async fn index(req: HttpRequest) -> Result<HttpResponse> {
+pub async fn index(_req: HttpRequest) -> Result<HttpResponse> {
     /* println!("{:?}", req); */
     // response
     Ok(HttpResponse::build(StatusCode::OK)
@@ -88,9 +88,9 @@ pub async fn index(req: HttpRequest) -> Result<HttpResponse> {
     Ok(fs::NamedFile::open("public/index.html")?.set_status_code(StatusCode::NOT_FOUND))
 } */
 
-pub async fn react_app() -> Result<fs::NamedFile> {
+/* pub async fn react_app() -> Result<fs::NamedFile> {
     Ok(fs::NamedFile::open("frontend/index.html")?.set_status_code(StatusCode::OK))
-}
+} */
 
 
 

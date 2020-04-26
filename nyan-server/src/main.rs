@@ -24,6 +24,10 @@ async fn main() -> io::Result<()> {
 
     let config = crate::config::Config::from_env().unwrap();
 
+    for (key, value) in std::env::vars() {
+        println!("{}: {}", key, value);
+    }
+
     let pool = config.pg.create_pool(NoTls).unwrap();
 
     println!("Hello, world!");
