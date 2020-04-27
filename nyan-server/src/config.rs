@@ -8,7 +8,7 @@ pub struct ServerConfig {
 }
 
 #[derive(Deserialize)]
-pub struct MailConfig {
+pub struct RustMailConfig {
     pub user: String,
     pub password: String,
 }
@@ -19,7 +19,7 @@ pub struct MailConfig {
 pub struct Config {
     pub server: ServerConfig,
     pub pg: deadpool_postgres::Config,
-    pub mail: MailConfig
+    pub rustmail: RustMailConfig
 }
 
 impl Config {

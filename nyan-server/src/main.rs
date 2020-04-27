@@ -20,7 +20,7 @@ use crate::handlers::*;
 
 #[actix_rt::main]
 async fn main() -> io::Result<()> {
-    dotenv().ok();
+    dotenv().expect("could not get env vars :(");
 
     let config = crate::config::Config::from_env().unwrap();
 
@@ -43,7 +43,8 @@ async fn main() -> io::Result<()> {
             .wrap(
                 Cors::new() // <- Construct CORS middleware builder
                   .allowed_origin("http://localhost:3000")
-                  .allowed_origin("http://localhost:5000")
+                  .allowed_origin("http://localhost:5500")
+                  .allowed_origin("http://localhost:5500")
                   .allowed_methods(vec!["GET", "POST"])
                   .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
                   .allowed_header(http::header::CONTENT_TYPE)

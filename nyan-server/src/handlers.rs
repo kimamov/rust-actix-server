@@ -2,7 +2,6 @@ use crate::db;
 use crate::models::{Status, User, SearchParams, Mail};
 use crate::multi_part_handler::split_payload;
 
-use actix_files as fs;
 use actix_multipart::Multipart;
 use actix_web::http::StatusCode;
 use actix_web::{
@@ -11,7 +10,6 @@ use actix_web::{
 };
 /* use actix_files::NamedFile;
 use std::path::PathBuf; */
-use std::collections::HashMap;
 use actix_identity::{Identity};
 use deadpool_postgres::{Client, Pool};
 use std::borrow::BorrowMut;
@@ -142,8 +140,8 @@ pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
     /* for (key, value) in std::env::vars() {
         println!("{}: {}", key, value);
     } */
-    let user=std::env::var("MAIL.USER").expect("MAIL.USER must be set in .env");
-    let password=std::env::var("MAIL.PASSWORD").expect("MAIL.PASSWORD must be set in .env");
+    let user=std::env::var("RUSTMAIL.USER").expect("MAIL.USER must be set in .env");
+    let password=std::env::var("RUSTMAIL.PASSWORD").expect("MAIL.PASSWORD must be set in .env");
     
     let email = Email::builder()
         .to("kantemir.imam@gmail.com")
