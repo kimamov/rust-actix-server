@@ -45,6 +45,10 @@ async fn main() -> io::Result<()> {
                   .allowed_origin("http://localhost:3000")
                   .allowed_origin("http://localhost:5500")
                   .allowed_origin("http://localhost:5500")
+                  .allowed_origin("http://kantimam.org")
+                  .allowed_origin("https://kantimam.org")
+                  .allowed_origin("https://romantic-sinoussi-84727e.netlify.app/")
+
                   .allowed_methods(vec!["GET", "POST"])
                   .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
                   .allowed_header(http::header::CONTENT_TYPE)
