@@ -17,6 +17,7 @@ pub struct Project {
     pub packageLink: Option<String>,
     pub priority: Option<i16>,
     pub images: Option<Vec<String>>,
+    pub technologies: Option<Vec<String>>
 }
 
 

@@ -35,7 +35,8 @@ pub async fn split_payload(payload: &mut Multipart) -> Project {
         repository: "".to_string(),
         packageLink: None,
         priority: None,
-        images: None
+        images: None,
+        technologies: None
     };
 
     while let Some(item) = payload.next().await {
