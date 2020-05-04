@@ -1,4 +1,5 @@
 /target
+/nyan-server/target
 /examples
 
 .env*
