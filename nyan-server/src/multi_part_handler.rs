@@ -36,7 +36,7 @@ pub async fn split_payload(payload: &mut Multipart) -> Project {
         packageLink: None,
         priority: None,
         images: None,
-        technologies: None
+        technologies: Some(vec!["JS".to_string()])
     };
 
     while let Some(item) = payload.next().await {
@@ -59,7 +59,18 @@ pub async fn split_payload(payload: &mut Multipart) -> Project {
                         "description" => project.description = data_string,
                         "homepage" => project.homepage= data_string,
                         "repository" => project.repository= data_string,
-                        "priority" => project.repository = data_string.parse().expect("not a number"),
+                        "priority" => project.priority = Some(data_string.parse().expect("not a number")),
+                        "technologies"=>{
+                            /* get an array of tech */
+                            let technology_vec: Vec<String>=data_string.split(',')
+                                .map(|item|
+                                    String::from(item.trim())
+                                )
+                                .collect();
+                                
+                            /* println!("{} and {}", technology_vec[0], technology_vec[1]); */
+                            project.technologies=Some(technology_vec);
+                        },
                         _=> println!("invalid field found")
                     };
 

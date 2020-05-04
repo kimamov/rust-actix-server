@@ -20,12 +20,12 @@ pub async fn get_projects(client: &Client, limit: Option<i64>, offset: Option<i6
 
 pub async fn create_project(client: &Client, project: Project)->Result<Project, io::Error> {
     let statement = client
-        .prepare("insert into projects (name, description, homepage, repository, priority, images) values ($1, $2, $3, $4, $5, $6) returning *")
+        .prepare("insert into projects (name, description, homepage, repository, priority, images, technologies) values ($1, $2, $3, $4, $5, $6, $7) returning *")
         .await
         .unwrap();
 
     client
-        .query(&statement, &[&project.name, &project.description, &project.homepage, &project.repository, &project.priority, &project.images])
+        .query(&statement, &[&project.name, &project.description, &project.homepage, &project.repository, &project.priority, &project.images, &project.technologies])
         .await
         .expect("Error creating project")
         .iter()

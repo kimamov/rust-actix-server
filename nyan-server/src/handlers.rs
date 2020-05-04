@@ -29,10 +29,7 @@ pub async fn status(id: Identity) -> impl Responder {
 }
 
 pub async fn get_projects(db_pool: web::Data<Pool>, query: web::Query<SearchParams>) -> impl Responder {    
-    /* match query.limit {
-        Some(data) =>  println!("{}", data),
-        None => println!("nothing found :(")
-    }; */
+
     let client: Client = db_pool
         .get()
         .await
@@ -46,14 +43,14 @@ pub async fn get_projects(db_pool: web::Data<Pool>, query: web::Query<SearchPara
     }
 }
 
-/* pub async fn project_form(req: HttpRequest) -> Result<HttpResponse> {
+pub async fn project_form(req: HttpRequest) -> Result<HttpResponse> {
     println!("{:?}", req);
 
     // response
     Ok(HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
         .body(include_str!("../public/project_form.html")))
-} */
+}
 
 pub async fn create_project(mut payload: Multipart, db_pool: web::Data<Pool>) -> impl Responder {
     let project = split_payload(payload.borrow_mut()).await;

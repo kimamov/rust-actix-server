@@ -59,9 +59,9 @@ async fn main() -> io::Result<()> {
                     .route(web::get().to(get_projects))
                     .route(web::post().to(create_project))
                 )
-                /* .service(web::resource("/projectform")
+                .service(web::resource("/projectform")
                     .route(web::get().to(project_form))
-                ) */
+                )
                 .service(web::resource("/login")
                     .route(web::get().to(log_in))
                 )

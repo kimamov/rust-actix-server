@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        *{
+        * {
             margin: 0;
         }
-        body{
+
+        body {
             height: 100vh;
             display: flex;
-            
+
         }
-        form{
+
+        form {
             margin: auto;
             width: 20rem;
             height: 30rem;
@@ -25,17 +28,20 @@
         }
     </style>
 </head>
+
 <body>
     <form action="/api/projects" enctype="multipart/form-data" method="post">
-        <input placeholder="name" type="text" name="title" >
-        <label for="desc">description</label>    
-        <textarea id="desc" name="description"  cols="30" rows="10"></textarea>
-        <input placeholder="homepage" type="url" name="homepage" >
-        <input placeholder="repo" type="url" name="repository" >
-        <input placeholder="priority" type="number" name="priority" >
+        <input placeholder="name" type="text" name="title">
+        <label for="desc">description</label>
+        <textarea id="desc" name="description" cols="30" rows="10"></textarea>
+        <input placeholder="homepage" type="url" name="homepage">
+        <input placeholder="repo" type="url" name="repository">
+        <input placeholder="tech stack seperated by ," type="text" name="technologies">
+        <input placeholder="priority" type="number" name="priority">
         <label for="image">images</label>
-        <input id="image" type="file" name="images"  multiple>
+        <input id="image" type="file" name="images" multiple>
         <input type="submit" value="send">
     </form>
 </body>
+
 </html>
