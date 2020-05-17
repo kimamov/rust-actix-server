@@ -1,7 +1,6 @@
 use actix_multipart::{Field, Multipart};
 use actix_web::web;
 use futures::StreamExt;
-/* use serde::{Deserialize, Serialize}; */
 use std::io::Write;
 use std::str;
 
@@ -21,8 +20,6 @@ impl UploadedFile {
     }
 }
 
-
-
 pub async fn split_payload(payload: &mut Multipart) -> Project {
     let mut files: Vec<String> = Vec::new();
 
@@ -36,7 +33,7 @@ pub async fn split_payload(payload: &mut Multipart) -> Project {
         packageLink: None,
         priority: None,
         images: None,
-        technologies: Some(vec!["JS".to_string()])
+        technologies: Some(vec!["JS".to_string()]),
     };
 
     while let Some(item) = payload.next().await {
@@ -44,36 +41,32 @@ pub async fn split_payload(payload: &mut Multipart) -> Project {
         let content_type = field.content_disposition().unwrap();
         let name = content_type.get_name().unwrap();
         if name != "images" {
-            /* println!("called outer loop"); */
             while let Some(chunk) = field.next().await {
-                /* println!("called Inner"); */
                 let data = chunk.expect("split_payload err chunk");
                 /* convert bytes to string and print it  (just for testing) */
 
                 if let Ok(s) = str::from_utf8(&data) {
                     let data_string = s.to_string();
-                    /* println!("{:?}", data_string); */
                     /* all not file fields of your form (feel free to fix this mess) */
                     match name {
                         "title" => project.name = data_string,
                         "description" => project.description = data_string,
-                        "homepage" => project.homepage= data_string,
-                        "repository" => project.repository= data_string,
-                        "priority" => project.priority = Some(data_string.parse().expect("not a number")),
-                        "technologies"=>{
+                        "homepage" => project.homepage = data_string,
+                        "repository" => project.repository = data_string,
+                        "priority" => {
+                            project.priority = Some(data_string.parse().expect("not a number"))
+                        }
+                        "technologies" => {
                             /* get an array of tech */
-                            let technology_vec: Vec<String>=data_string.split(',')
-                                .map(|item|
-                                    String::from(item.trim())
-                                )
+                            let technology_vec: Vec<String> = data_string
+                                .split(',')
+                                .map(|item| String::from(item.trim()))
                                 .collect();
-                                
                             /* println!("{} and {}", technology_vec[0], technology_vec[1]); */
-                            project.technologies=Some(technology_vec);
-                        },
-                        _=> println!("invalid field found")
+                            project.technologies = Some(technology_vec);
+                        }
+                        _ => println!("invalid field found"),
                     };
-
                 };
             }
         } else {
@@ -83,7 +76,7 @@ pub async fn split_payload(payload: &mut Multipart) -> Project {
                     let file_path = file.path.clone();
                     let mut f = web::block(move || std::fs::File::create(&file_path))
                         .await
-                        .unwrap();  // create file at path
+                        .unwrap(); // create file at path
                     while let Some(chunk) = field.next().await {
                         let data = chunk.unwrap();
                         f = web::block(move || f.write_all(&data).map(|_| f))
@@ -98,6 +91,6 @@ pub async fn split_payload(payload: &mut Multipart) -> Project {
             }
         }
     }
-    project.images=Some(files);
+    project.images = Some(files);
     project
 }

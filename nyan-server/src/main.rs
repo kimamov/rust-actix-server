@@ -11,7 +11,6 @@ use dotenv::dotenv;
 use std::io;
 use tokio_postgres::NoTls;
 
-/* use crate::models::Status; */
 use crate::handlers::*;
 
 #[actix_rt::main]
@@ -60,7 +59,7 @@ async fn main() -> io::Result<()> {
                             .route(web::post().to(create_project)),
                     )
                     .service(web::resource("/projectform").route(web::get().to(project_form)))
-                    .service(web::resource("/login").route(web::get().to(log_in)))
+                    .service(web::resource("/login").route(web::post().to(log_in)))
                     .service(web::resource("/logout").route(web::get().to(log_out)))
                     .service(web::resource("/status").route(web::get().to(status)))
                     .service(web::resource("/sendmail").route(web::post().to(send_mail)))

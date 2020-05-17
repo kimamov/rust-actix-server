@@ -1,35 +1,29 @@
 use crate::db;
-use crate::models::{Status, User, SearchParams, Mail};
+use crate::models::{Mail, SearchParams, Status, User};
 use crate::multi_part_handler::split_payload;
 
 use actix_multipart::Multipart;
 use actix_web::http::StatusCode;
-use actix_web::{
-    web, HttpRequest, HttpResponse, Responder,
-    Result,
-};
+use actix_web::{web, HttpRequest, HttpResponse, Responder, Result};
 /* use actix_files::NamedFile;
 use std::path::PathBuf; */
-use actix_identity::{Identity};
+use actix_identity::Identity;
 use deadpool_postgres::{Client, Pool};
-use std::borrow::BorrowMut;
-use lettre_email::Email;
 use lettre::smtp::authentication::Credentials;
 use lettre::{SmtpClient, Transport};
-
-
-
-
+use lettre_email::Email;
+use std::borrow::BorrowMut;
 
 pub async fn status(id: Identity) -> impl Responder {
-
     HttpResponse::Ok().json(Status {
         status: id.identity().unwrap_or_else(|| "guest_user".to_owned()),
     })
 }
 
-pub async fn get_projects(db_pool: web::Data<Pool>, query: web::Query<SearchParams>) -> impl Responder {    
-
+pub async fn get_projects(
+    db_pool: web::Data<Pool>,
+    query: web::Query<SearchParams>,
+) -> impl Responder {
     let client: Client = db_pool
         .get()
         .await
@@ -67,7 +61,6 @@ pub async fn create_project(mut payload: Multipart, db_pool: web::Data<Pool>) ->
         Ok(project) => HttpResponse::Ok().json(project),
         Err(_) => HttpResponse::InternalServerError().into(),
     }
-
 }
 
 /* #[get("/welcome")] */
@@ -79,67 +72,53 @@ pub async fn index(_req: HttpRequest) -> Result<HttpResponse> {
         .body(include_str!("../public/index.html")))
 }
 
-/* pub async fn p404() -> Result<fs::NamedFile> {
-    Ok(fs::NamedFile::open("public/index.html")?.set_status_code(StatusCode::NOT_FOUND))
-} */
-
-/* pub async fn react_app() -> Result<fs::NamedFile> {
-    Ok(fs::NamedFile::open("frontend/index.html")?.set_status_code(StatusCode::OK))
-} */
-
-
-
-pub async fn log_in(db_pool: web::Data<Pool>, id: Identity)->impl Responder{
+pub async fn log_in(
+    params: web::Form<User>,
+    db_pool: web::Data<Pool>,
+    id: Identity,
+) -> impl Responder {
     let client: Client = db_pool
         .get()
         .await
         .expect("Error connecting to the database");
-    
-    let user: User=User{
+
+    let user: User = User {
         id: None,
-        name: Some(String::from("kantemir")),
-        password: Some(String::from("test"))
+        name: params.name.to_string(),
+        password: params.password.to_string(),
     };
-    let result=db::log_in(&client, user)
-        .await;
+    let result = db::log_in(&client, user).await;
 
     match result {
-        Ok(user_name) =>{
-
+        Ok(user_name) => {
             id.remember(user_name.name.to_owned());
 
-            HttpResponse::Ok()
-
-                .json(user_name)
-               
-                
-        },
+            HttpResponse::Ok().json(user_name)
+        }
         Err(_) => HttpResponse::NotFound()
             .content_type("text/plain")
             .body("Not Found"),
     }
 }
 
-pub async fn log_out(id: Identity)->impl Responder{
+pub async fn log_out(id: Identity) -> impl Responder {
     id.forget();
     HttpResponse::Ok().json(Status {
         status: id.identity().unwrap_or_else(|| "guest_user".to_owned()),
     })
 }
 
-
 /* pub async fn static_files(req: HttpRequest)->Result<NamedFile>{
     let path: PathBuf = req.match_info().query("filename").parse().unwrap();
     Ok(NamedFile::open(path)?)
 } */
 
-pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
+pub async fn send_mail(params: web::Form<Mail>) -> impl Responder {
     /* for (key, value) in std::env::vars() {
         println!("{}: {}", key, value);
     } */
-    let user=std::env::var("RUSTMAIL.USER").expect("MAIL.USER must be set in .env");
-    let password=std::env::var("RUSTMAIL.PASSWORD").expect("MAIL.PASSWORD must be set in .env");
-    
+    let user = std::env::var("RUSTMAIL.USER").expect("MAIL.USER must be set in .env");
+    let password = std::env::var("RUSTMAIL.PASSWORD").expect("MAIL.PASSWORD must be set in .env");
     let email = Email::builder()
         .to("kantemir.imam@gmail.com")
         .from(params.email.to_string())
@@ -149,10 +128,7 @@ pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
         .build()
         .unwrap();
 
-    let creds = Credentials::new(
-        user,
-        password,
-    );
+    let creds = Credentials::new(user, password);
 
     // Open connection to gmail
     let mut mailer = SmtpClient::new_simple("smtp.ionos.de")
@@ -163,19 +139,15 @@ pub async fn send_mail(params: web::Form<Mail>)->impl Responder{
     // Send the email
     let result = mailer.send(email.into());
 
-   
-
-
     if result.is_ok() {
         /* println!("Could not send email: {:?}", params.email); */
         HttpResponse::Ok().json(Status {
-            status: String::from("succesfully send mail")
+            status: String::from("succesfully send mail"),
         })
     } else {
         /* println!("Could not send email: {:?}", result); */
         HttpResponse::InternalServerError().json(Status {
-            status: String::from("could not send mail! :(")
+            status: String::from("could not send mail! :("),
         })
     }
 }
-
