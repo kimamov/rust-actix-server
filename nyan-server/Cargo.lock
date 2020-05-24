@@ -1680,6 +1680,7 @@ dependencies = [
  "lettre_email",
  "mime",
  "serde 1.0.106",
+ "serde_json",
  "tokio-pg-mapper",
  "tokio-pg-mapper-derive",
  "tokio-postgres",

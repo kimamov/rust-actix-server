@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+        }
+
+        html,
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-image: radial-gradient(purple, orange);
+        }
+
+        nav {
+            height: 3rem;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.274);
+        }
+
+        form {
+            margin: auto;
+            width: 20rem;
+            height: 30rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            background-color: lightgreen;
+            padding: 1rem 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="/api/projects">projects</a>
+        <a href="/api/projectform">create</a>
+        {{#if user}}
+        <div class="user">
+            {{user}}
+        </div>
+        <a href="/api/logout">logout</a>
+        {{else}}
+        <a href="/api/login">login</a>
+        {{/if}}
+        <a href="/api/status">status</a>
+    </nav>
+    <form action="/api/projects" enctype="multipart/form-data" method="post">
+        <input placeholder="name" type="text" name="title">
+        <label for="desc">description</label>
+        <textarea id="desc" name="description" cols="30" rows="10"></textarea>
+        <input placeholder="homepage" type="url" name="homepage">
+        <input placeholder="repo" type="url" name="repository">
+        <input placeholder="tech stack seperated by ," type="text" name="technologies">
+        <input placeholder="priority" type="number" name="priority">
+        <label for="image">images</label>
+        <input id="image" type="file" name="images" multiple>
+        <input type="submit" value="send">
+    </form>
+</body>
+
+</html>

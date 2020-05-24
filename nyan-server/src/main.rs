@@ -65,11 +65,13 @@ async fn main() -> io::Result<()> {
                             .route(web::get().to(get_projects))
                             .route(web::post().to(create_project)),
                     )
-                    .service(web::resource("/projectform").route(web::get().to(project_form)))
+                    .service(
+                        web::resource("/projectform").route(web::get().to(create_project_template)),
+                    )
                     .service(
                         web::resource("/login")
                             .route(web::post().to(log_in))
-                            .route(web::get().to(log_in_form)),
+                            .route(web::get().to(log_in_template)),
                     )
                     .service(web::resource("/logout").route(web::get().to(log_out)))
                     .service(web::resource("/status").route(web::get().to(status)))
@@ -77,7 +79,7 @@ async fn main() -> io::Result<()> {
                     .service(
                         fs::Files::new("/static", "./files"), /* .show_files_listing() */
                     )
-                    .default_service(web::route().to(index)),
+                    .default_service(web::route().to(index_template)),
             )
     })
     .bind(format!("{}:{}", config.server.host, config.server.port))?

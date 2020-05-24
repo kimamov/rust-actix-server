@@ -4,13 +4,14 @@ use crate::multi_part_handler::split_payload;
 
 use actix_identity::Identity;
 use actix_multipart::Multipart;
-use actix_web::http::StatusCode;
-use actix_web::{web, HttpRequest, HttpResponse, Responder, Result};
+use actix_web::{web, HttpResponse, Responder};
 use bcrypt::{hash, verify, DEFAULT_COST};
 use deadpool_postgres::{Client, Pool};
+use handlebars::Handlebars;
 use lettre::smtp::authentication::Credentials;
 use lettre::{SmtpClient, Transport};
 use lettre_email::Email;
+use serde_json::json;
 use std::borrow::BorrowMut;
 
 fn redirect_to_log_in() -> HttpResponse {
@@ -47,12 +48,16 @@ pub async fn get_projects(
     }
 }
 
-pub async fn project_form(id: Identity, _req: HttpRequest) -> impl Responder {
-    // redirect to login if not logged in otherwise serve create project form
+pub async fn create_project_template(
+    id: Identity,
+    hb: web::Data<Handlebars<'_>>,
+) -> impl Responder {
     match id.identity() {
-        Some(_) => HttpResponse::build(StatusCode::OK)
-            .content_type("text/html; charset=utf-8")
-            .body(include_str!("../public/project_form.html")),
+        Some(identity) => {
+            let data = json!({ "user": identity });
+            let body = hb.render("project_form", &data).unwrap();
+            HttpResponse::Ok().body(body)
+        }
         None => redirect_to_log_in(),
     }
 }
@@ -78,11 +83,12 @@ pub async fn create_admin(db_pool: &Pool) {
         .expect("Error creating admin");
 }
 
-pub async fn log_in_form(_req: HttpRequest) -> Result<HttpResponse> {
-    // response
-    Ok(HttpResponse::build(StatusCode::OK)
-        .content_type("text/html; charset=utf-8")
-        .body(include_str!("../public/login.html")))
+pub async fn log_in_template(id: Identity, hb: web::Data<Handlebars<'_>>) -> HttpResponse {
+    let user = id.identity();
+    let data = json!({ "user": user });
+    let body = hb.render("login", &data).unwrap();
+
+    HttpResponse::Ok().body(body)
 }
 
 pub async fn create_project(
@@ -110,10 +116,12 @@ pub async fn create_project(
     }
 }
 
-pub async fn index(_req: HttpRequest) -> Result<HttpResponse> {
-    Ok(HttpResponse::build(StatusCode::OK)
-        .content_type("text/html; charset=utf-8")
-        .body(include_str!("../public/index.html")))
+pub async fn index_template(id: Identity, hb: web::Data<Handlebars<'_>>) -> HttpResponse {
+    let user = id.identity();
+    let data = json!({ "user": user });
+    let body = hb.render("index", &data).unwrap();
+
+    HttpResponse::Ok().body(body)
 }
 
 pub async fn log_in(
@@ -134,7 +142,6 @@ pub async fn log_in(
         Ok(user_data) => {
             // check if users password matches the newly hashed password
             let hashed_password = hash(params.password.to_string(), DEFAULT_COST).unwrap();
-
             let result = verify(user_data.password, &hashed_password);
             match result {
                 Ok(_r) => {
