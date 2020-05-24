@@ -62,7 +62,6 @@ pub async fn split_payload(payload: &mut Multipart) -> Project {
                                 .split(',')
                                 .map(|item| String::from(item.trim()))
                                 .collect();
-                            /* println!("{} and {}", technology_vec[0], technology_vec[1]); */
                             project.technologies = Some(technology_vec);
                         }
                         _ => println!("invalid field found"),

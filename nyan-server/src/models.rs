@@ -23,7 +23,7 @@ pub struct Project {
 #[derive(Serialize, Deserialize, Debug, PostgresMapper)]
 #[pg_mapper(table = "users")]
 pub struct User {
-    pub id: Option<u32>,
+    pub id: Option<i32>,
     pub name: String,
     pub password: String,
 }

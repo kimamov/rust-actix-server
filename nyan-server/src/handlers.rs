@@ -2,17 +2,17 @@ use crate::db;
 use crate::models::{Mail, SearchParams, Status, User};
 use crate::multi_part_handler::split_payload;
 
+use actix_identity::Identity;
 use actix_multipart::Multipart;
 use actix_web::http::StatusCode;
 use actix_web::{web, HttpRequest, HttpResponse, Responder, Result};
-/* use actix_files::NamedFile;
-use std::path::PathBuf; */
-use actix_identity::Identity;
+use bcrypt::{hash, verify, DEFAULT_COST};
 use deadpool_postgres::{Client, Pool};
 use lettre::smtp::authentication::Credentials;
 use lettre::{SmtpClient, Transport};
 use lettre_email::Email;
 use std::borrow::BorrowMut;
+use std::io;
 
 pub async fn status(id: Identity) -> impl Responder {
     HttpResponse::Ok().json(Status {
@@ -37,18 +37,43 @@ pub async fn get_projects(
     }
 }
 
-pub async fn project_form(req: HttpRequest) -> Result<HttpResponse> {
-    println!("{:?}", req);
-
+pub async fn project_form(_req: HttpRequest) -> Result<HttpResponse> {
     // response
     Ok(HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
         .body(include_str!("../public/project_form.html")))
 }
 
+pub async fn create_admin(db_pool: &Pool) {
+    let user = std::env::var("ADMIN.NAME").expect("ADMIN.NAME must be set in .env");
+    let password = std::env::var("ADMIN.PASSWORD").expect("ADMIN.PASSWORD must be set in .env");
+    let client: Client = db_pool
+        .get()
+        .await
+        .expect("Error connecting to the database");
+
+    // create hash for the password
+    let hashed_password = hash(password.to_string(), DEFAULT_COST).unwrap();
+
+    let user: User = User {
+        id: None,
+        name: user.to_string(),
+        password: hashed_password,
+    };
+    db::create_user(&client, user)
+        .await
+        .expect("Error creating admin");
+}
+
+pub async fn log_in_form(_req: HttpRequest) -> Result<HttpResponse> {
+    // response
+    Ok(HttpResponse::build(StatusCode::OK)
+        .content_type("text/html; charset=utf-8")
+        .body(include_str!("../public/login.html")))
+}
+
 pub async fn create_project(mut payload: Multipart, db_pool: web::Data<Pool>) -> impl Responder {
     let project = split_payload(payload.borrow_mut()).await;
-    /* println!("bytes={:#?}", project); */
 
     let client: Client = db_pool
         .get()
@@ -63,10 +88,7 @@ pub async fn create_project(mut payload: Multipart, db_pool: web::Data<Pool>) ->
     }
 }
 
-/* #[get("/welcome")] */
 pub async fn index(_req: HttpRequest) -> Result<HttpResponse> {
-    /* println!("{:?}", req); */
-    // response
     Ok(HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
         .body(include_str!("../public/index.html")))
@@ -82,22 +104,30 @@ pub async fn log_in(
         .await
         .expect("Error connecting to the database");
 
-    let user: User = User {
-        id: None,
-        name: params.name.to_string(),
-        password: params.password.to_string(),
-    };
-    let result = db::log_in(&client, user).await;
+    // create hash for the password
+    let hashed_password = hash(params.password.to_string(), DEFAULT_COST).unwrap();
 
-    match result {
-        Ok(user_name) => {
-            id.remember(user_name.name.to_owned());
+    let user = db::log_in(&client, params.name.to_string()).await;
 
-            HttpResponse::Ok().json(user_name)
+    match user {
+        Ok(user_data) => {
+            // check if users password matches the newly hashed password
+            let result = verify(user_data.password, &hashed_password);
+            match result {
+                Ok(_r) => {
+                    id.remember(user_data.name.to_owned());
+                    HttpResponse::Ok().json(user_data.name)
+                }
+                // user found but password not matching error
+                Err(_) => HttpResponse::NotFound()
+                    .content_type("text/plain")
+                    .body("could not find user with this combination of name and password"),
+            }
         }
+        // no user error
         Err(_) => HttpResponse::NotFound()
             .content_type("text/plain")
-            .body("Not Found"),
+            .body("could not find user with this combination of name and password"),
     }
 }
 
@@ -114,9 +144,6 @@ pub async fn log_out(id: Identity) -> impl Responder {
 } */
 
 pub async fn send_mail(params: web::Form<Mail>) -> impl Responder {
-    /* for (key, value) in std::env::vars() {
-        println!("{}: {}", key, value);
-    } */
     let user = std::env::var("RUSTMAIL.USER").expect("MAIL.USER must be set in .env");
     let password = std::env::var("RUSTMAIL.PASSWORD").expect("MAIL.PASSWORD must be set in .env");
     let email = Email::builder()
@@ -140,12 +167,10 @@ pub async fn send_mail(params: web::Form<Mail>) -> impl Responder {
     let result = mailer.send(email.into());
 
     if result.is_ok() {
-        /* println!("Could not send email: {:?}", params.email); */
         HttpResponse::Ok().json(Status {
             status: String::from("succesfully send mail"),
         })
     } else {
-        /* println!("Could not send email: {:?}", result); */
         HttpResponse::InternalServerError().json(Status {
             status: String::from("could not send mail! :("),
         })

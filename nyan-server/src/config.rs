@@ -13,13 +13,18 @@ pub struct RustMailConfig {
     pub password: String,
 }
 
-
+#[derive(Deserialize)]
+pub struct AdminConfig {
+    pub name: String,
+    pub password: String,
+}
 
 #[derive(Deserialize)]
 pub struct Config {
     pub server: ServerConfig,
     pub pg: deadpool_postgres::Config,
-    pub rustmail: RustMailConfig
+    pub rustmail: RustMailConfig,
+    pub admin: AdminConfig,
 }
 
 impl Config {

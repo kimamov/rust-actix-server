@@ -19,13 +19,10 @@ async fn main() -> io::Result<()> {
 
     let config = crate::config::Config::from_env().unwrap();
 
-    for (key, value) in std::env::vars() {
-        println!("{}: {}", key, value);
-    }
-
     let pool = config.pg.create_pool(NoTls).unwrap();
 
-    println!("Hello, world!");
+    create_admin(&pool).await;
+
     HttpServer::new(move || {
         App::new()
             .data(pool.clone())
@@ -59,21 +56,19 @@ async fn main() -> io::Result<()> {
                             .route(web::post().to(create_project)),
                     )
                     .service(web::resource("/projectform").route(web::get().to(project_form)))
-                    .service(web::resource("/login").route(web::post().to(log_in)))
+                    .service(
+                        web::resource("/login")
+                            .route(web::post().to(log_in))
+                            .route(web::get().to(log_in_form)),
+                    )
                     .service(web::resource("/logout").route(web::get().to(log_out)))
                     .service(web::resource("/status").route(web::get().to(status)))
                     .service(web::resource("/sendmail").route(web::post().to(send_mail)))
-                    /* static files */
-                    /* .service(web::resource("/static/{filename:.*}")
-                        .route(web::get().to(static_files))
-                    ) */
                     .service(
                         fs::Files::new("/static", "./files"), /* .show_files_listing() */
                     )
                     .default_service(web::route().to(index)),
             )
-
-        /* .service(fs::Files::new("/", "./frontend").index_file("index.html")) */
     })
     .bind(format!("{}:{}", config.server.host, config.server.port))?
     .run()
