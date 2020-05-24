@@ -12,7 +12,17 @@ use lettre::smtp::authentication::Credentials;
 use lettre::{SmtpClient, Transport};
 use lettre_email::Email;
 use std::borrow::BorrowMut;
-use std::io;
+
+fn redirect_to_log_in() -> HttpResponse {
+    HttpResponse::TemporaryRedirect()
+        .header("location", "/api/login")
+        .finish()
+}
+fn redirect_to_home() -> HttpResponse {
+    HttpResponse::TemporaryRedirect()
+        .header("location", "/api/")
+        .finish()
+}
 
 pub async fn status(id: Identity) -> impl Responder {
     HttpResponse::Ok().json(Status {
@@ -37,11 +47,14 @@ pub async fn get_projects(
     }
 }
 
-pub async fn project_form(_req: HttpRequest) -> Result<HttpResponse> {
-    // response
-    Ok(HttpResponse::build(StatusCode::OK)
-        .content_type("text/html; charset=utf-8")
-        .body(include_str!("../public/project_form.html")))
+pub async fn project_form(id: Identity, _req: HttpRequest) -> impl Responder {
+    // redirect to login if not logged in otherwise serve create project form
+    match id.identity() {
+        Some(_) => HttpResponse::build(StatusCode::OK)
+            .content_type("text/html; charset=utf-8")
+            .body(include_str!("../public/project_form.html")),
+        None => redirect_to_log_in(),
+    }
 }
 
 pub async fn create_admin(db_pool: &Pool) {
@@ -72,19 +85,28 @@ pub async fn log_in_form(_req: HttpRequest) -> Result<HttpResponse> {
         .body(include_str!("../public/login.html")))
 }
 
-pub async fn create_project(mut payload: Multipart, db_pool: web::Data<Pool>) -> impl Responder {
-    let project = split_payload(payload.borrow_mut()).await;
+pub async fn create_project(
+    id: Identity,
+    mut payload: Multipart,
+    db_pool: web::Data<Pool>,
+) -> impl Responder {
+    match id.identity() {
+        Some(_) => {
+            let project = split_payload(payload.borrow_mut()).await;
 
-    let client: Client = db_pool
-        .get()
-        .await
-        .expect("Error connecting to the database");
+            let client: Client = db_pool
+                .get()
+                .await
+                .expect("Error connecting to the database");
 
-    let result = db::create_project(&client, project).await;
+            let result = db::create_project(&client, project).await;
 
-    match result {
-        Ok(project) => HttpResponse::Ok().json(project),
-        Err(_) => HttpResponse::InternalServerError().into(),
+            match result {
+                Ok(project) => HttpResponse::Ok().json(project),
+                Err(_) => HttpResponse::InternalServerError().into(),
+            }
+        }
+        None => redirect_to_log_in(),
     }
 }
 
@@ -116,7 +138,7 @@ pub async fn log_in(
             match result {
                 Ok(_r) => {
                     id.remember(user_data.name.to_owned());
-                    HttpResponse::Ok().json(user_data.name)
+                    redirect_to_home()
                 }
                 // user found but password not matching error
                 Err(_) => HttpResponse::NotFound()
@@ -133,9 +155,7 @@ pub async fn log_in(
 
 pub async fn log_out(id: Identity) -> impl Responder {
     id.forget();
-    HttpResponse::Ok().json(Status {
-        status: id.identity().unwrap_or_else(|| "guest_user".to_owned()),
-    })
+    redirect_to_home()
 }
 
 /* pub async fn static_files(req: HttpRequest)->Result<NamedFile>{
