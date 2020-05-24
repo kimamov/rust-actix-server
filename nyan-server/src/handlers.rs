@@ -127,13 +127,14 @@ pub async fn log_in(
         .expect("Error connecting to the database");
 
     // create hash for the password
-    let hashed_password = hash(params.password.to_string(), DEFAULT_COST).unwrap();
 
     let user = db::log_in(&client, params.name.to_string()).await;
 
     match user {
         Ok(user_data) => {
             // check if users password matches the newly hashed password
+            let hashed_password = hash(params.password.to_string(), DEFAULT_COST).unwrap();
+
             let result = verify(user_data.password, &hashed_password);
             match result {
                 Ok(_r) => {

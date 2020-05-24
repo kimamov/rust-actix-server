@@ -8,6 +8,7 @@ use actix_files as fs;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
 use actix_web::{http, web, App, HttpServer};
 use dotenv::dotenv;
+use handlebars::Handlebars;
 use std::io;
 use tokio_postgres::NoTls;
 
@@ -21,11 +22,20 @@ async fn main() -> io::Result<()> {
 
     let pool = config.pg.create_pool(NoTls).unwrap();
 
+    // create or update admin account
     create_admin(&pool).await;
+
+    // setupt templating engine
+    let mut handlebars = Handlebars::new();
+    handlebars
+        .register_templates_directory(".html", "./public/templates")
+        .unwrap();
+    let handlebars_ref = web::Data::new(handlebars);
 
     HttpServer::new(move || {
         App::new()
             .data(pool.clone())
+            .app_data(handlebars_ref.clone())
             .wrap(IdentityService::new(
                 CookieIdentityPolicy::new(&[0; 32])
                     .name("auth-cookie")
