@@ -1,5 +1,5 @@
 use actix_multipart::{Field, Multipart};
-use actix_web::web;
+use actix_web::{error, web, Error};
 use futures::StreamExt;
 use std::io::Write;
 use std::str;
@@ -20,7 +20,7 @@ impl UploadedFile {
     }
 }
 
-pub async fn split_payload(payload: &mut Multipart) -> Project {
+pub async fn split_payload(payload: &mut Multipart) -> Result<Project, Error> {
     let mut files: Vec<String> = Vec::new();
 
     /* fill with default values for now */
@@ -38,8 +38,12 @@ pub async fn split_payload(payload: &mut Multipart) -> Project {
 
     while let Some(item) = payload.next().await {
         let mut field: Field = item.expect(" split_payload err");
-        let content_type = field.content_disposition().unwrap();
-        let name = content_type.get_name().unwrap();
+        let content_type = field
+            .content_disposition()
+            .ok_or_else(|| error::ParseError::Incomplete)?;
+        let name = content_type
+            .get_name()
+            .ok_or_else(|| error::ParseError::Incomplete)?;
         if name != "images" {
             while let Some(chunk) = field.next().await {
                 let data = chunk.expect("split_payload err chunk");
@@ -71,25 +75,24 @@ pub async fn split_payload(payload: &mut Multipart) -> Project {
         } else {
             match content_type.get_filename() {
                 Some(filename) => {
-                    let file = UploadedFile::new(filename); // create new UploadedFiles
-                    let file_path = file.path.clone();
-                    let mut f = web::block(move || std::fs::File::create(&file_path))
-                        .await
-                        .unwrap(); // create file at path
-                    while let Some(chunk) = field.next().await {
-                        let data = chunk.unwrap();
-                        f = web::block(move || f.write_all(&data).map(|_| f))
-                            .await
-                            .unwrap(); // write data chunks to file
+                    if filename != "" {
+                        println!("filename {}", filename);
+                        let file = UploadedFile::new(filename); // create new UploadedFiles
+                        let file_path = file.path.clone();
+                        let mut f = web::block(move || std::fs::File::create(&file_path)).await?;
+                        while let Some(chunk) = field.next().await {
+                            let data = chunk.unwrap();
+                            f = web::block(move || f.write_all(&data).map(|_| f)).await?
+                        }
+                        files.push(file.name); // form only needs name
                     }
-                    files.push(file.name); // form only needs name
                 }
                 None => {
-                    println!("file none");
+                    //println!("file none");
                 }
             }
         }
     }
     project.images = Some(files);
-    project
+    Ok(project)
 }

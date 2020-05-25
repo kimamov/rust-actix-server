@@ -100,16 +100,23 @@ pub async fn create_project(
         Some(_) => {
             let project = split_payload(payload.borrow_mut()).await;
 
-            let client: Client = db_pool
-                .get()
-                .await
-                .expect("Error connecting to the database");
+            match project {
+                Ok(project) => {
+                    let client: Client = db_pool
+                        .get()
+                        .await
+                        .expect("Error connecting to the database");
 
-            let result = db::create_project(&client, project).await;
+                    let result = db::create_project(&client, project).await;
 
-            match result {
-                Ok(project) => HttpResponse::Ok().json(project),
-                Err(_) => HttpResponse::InternalServerError().into(),
+                    match result {
+                        Ok(project) => HttpResponse::Ok().json(project),
+                        Err(_) => HttpResponse::InternalServerError().into(),
+                    }
+                }
+                Err(_error) => HttpResponse::Ok().json(Status {
+                    status: "could not create project".to_string(),
+                }),
             }
         }
         None => redirect_to_log_in(),
