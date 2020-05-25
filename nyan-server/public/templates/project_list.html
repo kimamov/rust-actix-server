@@ -5,44 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <style>
-        html,
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background-image: radial-gradient(purple, orange);
-        }
+    <link rel="stylesheet" href="./static/css/main.css">
 
-        nav {
-            height: 3rem;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            width: 100%;
-            background-color: rgba(0, 0, 0, 0.274);
-        }
-
-        main {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-            grid-gap: 0.1rem;
-            margin: 0 auto;
-            max-width: 80rem;
-        }
-
-        .projectItem {
-            min-height: 8rem;
-            background-color: lightgray;
-            border-radius: 0.4rem;
-            padding: 0.6rem 0.2rem;
-        }
-
-        img {
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-        }
-    </style>
 </head>
 
 <body>
@@ -63,8 +27,8 @@
         {{#if projects}}
         {{#each projects}}
         <div class="projectItem">
-            <img src="/api/static/{{this.images.[0]}}" alt=" thumbnail">
-            <p>{{this.name}}</p>
+            <img src="/api/static/{{this.images.[0]}}" alt="thumbnail">
+            <strong>{{this.name}}</strong>
             <p>{{this.priority}}</p>
         </div>
         {{/each}}
