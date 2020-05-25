@@ -48,6 +48,29 @@ pub async fn get_projects(
     }
 }
 
+pub async fn get_projects_template(
+    id: Identity,
+    hb: web::Data<Handlebars<'_>>,
+    db_pool: web::Data<Pool>,
+    query: web::Query<SearchParams>,
+) -> impl Responder {
+    let client: Client = db_pool
+        .get()
+        .await
+        .expect("Error connecting to the database");
+
+    let result = db::get_projects(&client, query.limit, query.offset).await;
+
+    match result {
+        Ok(projects) => {
+            let data = json!({ "user": id.identity(), "projects": projects });
+            let body = hb.render("project_list", &data).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        Err(_) => HttpResponse::InternalServerError().into(),
+    }
+}
+
 pub async fn create_project_template(
     id: Identity,
     hb: web::Data<Handlebars<'_>>,

@@ -66,6 +66,9 @@ async fn main() -> io::Result<()> {
                             .route(web::post().to(create_project)),
                     )
                     .service(
+                        web::resource("/projectslist").route(web::get().to(get_projects_template)),
+                    )
+                    .service(
                         web::resource("/projectform").route(web::get().to(create_project_template)),
                     )
                     .service(
