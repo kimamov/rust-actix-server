@@ -28,7 +28,7 @@ async fn main() -> io::Result<()> {
     // setupt templating engine
     let mut handlebars = Handlebars::new();
     handlebars
-        .register_templates_directory(".html", "./public/templates")
+        .register_templates_directory(".html", config.directory.templates)
         .unwrap();
     let handlebars_ref = web::Data::new(handlebars);
 
@@ -79,9 +79,11 @@ async fn main() -> io::Result<()> {
                     .service(web::resource("/logout").route(web::get().to(log_out)))
                     .service(web::resource("/status").route(web::get().to(status)))
                     .service(web::resource("/sendmail").route(web::post().to(send_mail)))
-                    .service(
-                        fs::Files::new("/static", "./files"), /* .show_files_listing() */
-                    )
+                    .service(fs::Files::new(
+                        "/static",
+                        std::env::var("DIRECTORY.STATIC_FILES")
+                            .expect("DIRECTORY.STATIC_FILES must be set in the .env variables"),
+                    ))
                     .default_service(web::route().to(index_template)),
             )
     })
