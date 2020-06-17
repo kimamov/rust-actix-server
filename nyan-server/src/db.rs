@@ -56,6 +56,8 @@ pub async fn create_project(client: &Client, project: Project) -> Result<Project
         ))
 }
 
+// add update project
+
 pub async fn log_in(client: &Client, user_name: String) -> Result<User, io::Error> {
     let statement = client
         .prepare("select * from users where name = $1")

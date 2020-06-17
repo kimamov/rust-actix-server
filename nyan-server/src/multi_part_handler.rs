@@ -26,18 +26,8 @@ pub async fn split_payload(payload: &mut Multipart) -> Result<Project, Error> {
         .expect("DIRECTORY.STATIC_FILES must be set in the .env variables");
     let mut files: Vec<String> = Vec::new();
 
-    /* fill with default values for now */
-    let mut project: Project = Project {
-        id: None,
-        name: "".to_string(),
-        description: "".to_string(),
-        homepage: "".to_string(),
-        repository: "".to_string(),
-        packageLink: None,
-        priority: None,
-        images: None,
-        technologies: Some(vec!["JS".to_string()]),
-    };
+    /* create a default project mostly empty values */
+    let mut project: Project = Default::default();
     // iterate over all formdata fields
     while let Some(item) = payload.next().await {
         let mut field: Field = item.expect(" split_payload err");

@@ -20,6 +20,22 @@ pub struct Project {
     pub technologies: Option<Vec<String>>,
 }
 
+impl Default for Project {
+    fn default() -> Project {
+        Project {
+            id: None,
+            name: "".to_string(),
+            description: "".to_string(),
+            homepage: "".to_string(),
+            repository: "".to_string(),
+            packageLink: None,
+            priority: None,
+            images: None,
+            technologies: None,
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug, PostgresMapper)]
 #[pg_mapper(table = "users")]
 pub struct User {

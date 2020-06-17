@@ -146,6 +146,8 @@ pub async fn create_project(
     }
 }
 
+// update project here
+
 pub async fn index_template(id: Identity, hb: web::Data<Handlebars<'_>>) -> HttpResponse {
     let user = id.identity();
     let data = json!({ "user": user });
