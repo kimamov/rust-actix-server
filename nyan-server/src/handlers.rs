@@ -21,7 +21,7 @@ fn redirect_to_log_in() -> HttpResponse {
 }
 fn redirect_to_home() -> HttpResponse {
     HttpResponse::TemporaryRedirect()
-        .header("location", "/api/")
+        .header("location", "/api")
         .finish()
 }
 

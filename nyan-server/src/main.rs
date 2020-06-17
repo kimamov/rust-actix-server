@@ -1,17 +1,18 @@
 mod config;
+mod cors;
 mod db;
 mod handlers;
 mod models;
 mod multi_part_handler;
-use actix_cors::Cors;
 use actix_files as fs;
 use actix_identity::{CookieIdentityPolicy, IdentityService};
-use actix_web::{http, web, App, HttpServer};
+use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
 use handlebars::Handlebars;
 use std::io;
 use tokio_postgres::NoTls;
 
+use crate::cors::cors_options;
 use crate::handlers::*;
 
 #[actix_rt::main]
@@ -42,22 +43,7 @@ async fn main() -> io::Result<()> {
                     .secure(false)
                     .max_age(86400), // 1 day in seconds
             ))
-            .wrap(
-                Cors::new() // <- Construct CORS middleware builder
-                    .allowed_origin("http://localhost:3000")
-                    .allowed_origin("https://localhost:5500")
-                    .allowed_origin("http://localhost:5500")
-                    .allowed_origin("https://api.baizuo.online")
-                    .allowed_origin("http://api.baizuo.online")
-                    .allowed_origin("http://kantimam.org")
-                    .allowed_origin("https://kantimam.org")
-                    .allowed_origin("https://romantic-sinoussi-84727e.netlify.app/")
-                    .allowed_methods(vec!["GET", "POST"])
-                    .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-                    .allowed_header(http::header::CONTENT_TYPE)
-                    .max_age(3600)
-                    .finish(),
-            )
+            .wrap(cors_options())
             .service(
                 web::scope("/api")
                     .service(
