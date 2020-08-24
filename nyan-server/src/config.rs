@@ -7,11 +7,11 @@ pub struct ServerConfig {
     pub port: i32,
 }
 
-#[derive(Deserialize)]
+/* #[derive(Deserialize)]
 pub struct RustMailConfig {
     pub user: String,
     pub password: String,
-}
+} */
 
 #[derive(Deserialize)]
 pub struct AdminConfig {
@@ -47,7 +47,7 @@ impl Default for Directory {
 pub struct Config {
     pub server: ServerConfig,
     pub pg: deadpool_postgres::Config,
-    pub rustmail: RustMailConfig,
+    //pub rustmail: RustMailConfig,
     pub admin: AdminConfig,
     pub directory: Directory,
 }

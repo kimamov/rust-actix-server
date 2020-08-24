@@ -64,7 +64,7 @@ async fn main() -> io::Result<()> {
                     )
                     .service(web::resource("/logout").route(web::get().to(log_out)))
                     .service(web::resource("/status").route(web::get().to(status)))
-                    .service(web::resource("/sendmail").route(web::post().to(send_mail)))
+                    /* .service(web::resource("/sendmail").route(web::post().to(send_mail))) */
                     .service(fs::Files::new(
                         "/static",
                         std::env::var("DIRECTORY.STATIC_FILES")
