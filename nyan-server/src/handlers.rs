@@ -4,7 +4,7 @@ use crate::multi_part_handler::split_payload;
 
 use actix_identity::Identity;
 use actix_multipart::Multipart;
-use actix_web::{web, HttpResponse, Responder};
+use actix_web::{web, HttpResponse, Responder, HttpRequest};
 use bcrypt::{hash, verify, DEFAULT_COST};
 use deadpool_postgres::{Client, Pool};
 use handlebars::Handlebars;
@@ -48,6 +48,24 @@ pub async fn get_projects(
     }
 }
 
+pub async fn get_project(
+    db_pool: web::Data<Pool>,
+    req: HttpRequest,
+) -> impl Responder {
+    let id: i32 = req.match_info().query("projectid").parse().unwrap();
+    let client: Client = db_pool
+        .get()
+        .await
+        .expect("Error connecting to the database");
+
+        let result = db::get_project(&client, id).await;
+
+    match result {
+        Ok(project) => HttpResponse::Ok().json(project),
+        Err(_) => HttpResponse::NotFound().body(format!("could not find post with the provided ID: {}", id))
+    }
+}
+
 pub async fn get_projects_template(
     id: Identity,
     hb: web::Data<Handlebars<'_>>,
@@ -65,6 +83,31 @@ pub async fn get_projects_template(
         Ok(projects) => {
             let data = json!({ "user": id.identity(), "projects": projects });
             let body = hb.render("project_list", &data).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        Err(_) => HttpResponse::InternalServerError().into(),
+    }
+}
+
+pub async fn get_project_template(
+    id: Identity,
+    hb: web::Data<Handlebars<'_>>,
+    db_pool: web::Data<Pool>,
+    req: HttpRequest
+) -> impl Responder {
+    let project_id: i32 = req.match_info().query("projectid").parse().unwrap();
+
+    let client: Client = db_pool
+        .get()
+        .await
+        .expect("Error connecting to the database");
+
+    let result = db::get_project(&client, project_id).await;
+
+    match result {
+        Ok(project) => {
+            let data = json!({ "user": id.identity(), "project": project });
+            let body = hb.render("project", &data).unwrap();
             HttpResponse::Ok().body(body)
         }
         Err(_) => HttpResponse::InternalServerError().into(),
@@ -149,13 +192,31 @@ pub async fn create_project(
 // update project here
 pub async fn update_project(
     id: Identity,
-    path: web::Path<(String)>,
+    mut payload: Multipart,
     db_pool: web::Data<Pool>,
 ) -> impl Responder {
     match id.identity() {
         Some(_) => {
+            let project = split_payload(payload.borrow_mut()).await;
 
-            HttpResponse::Ok().body("it worked")
+            match project {
+                Ok(project) => {
+                    let client: Client = db_pool
+                        .get()
+                        .await
+                        .expect("Error connecting to the database");
+
+                    let result = db::update_project(&client, project).await;
+
+                    match result {
+                        Ok(project) => HttpResponse::Ok().json(project),
+                        Err(_) => HttpResponse::InternalServerError().into(),
+                    }
+                }
+                Err(_error) => HttpResponse::Ok().json(Status {
+                    status: "could not update project".to_string(),
+                }),
+            }
         }
         None => redirect_to_log_in(),
     }

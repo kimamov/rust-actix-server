@@ -52,7 +52,12 @@ async fn main() -> io::Result<()> {
                             .route(web::post().to(create_project)),
                     )
                     .service(
-                        web::resource("/projects/{projectid}")
+                        web::resource("/project")
+                            .route(web::patch().to(create_project)),
+                    )
+                    .service(
+                        web::resource("/project/{projectid}")
+                            .route(web::get().to(get_project_template))
                             .route(web::patch().to(create_project)),
                     )
                     .service(

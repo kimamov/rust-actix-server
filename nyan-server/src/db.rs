@@ -25,6 +25,32 @@ pub async fn get_projects(
     Ok(projects)
 }
 
+pub async fn get_project(
+    client: &Client,
+    project_id: i32,
+) -> Result<Project, io::Error> {
+    let statement = client
+        .prepare("select * from projects where id = $1")
+        .await
+        .unwrap();
+
+    client
+        .query(&statement, &[&project_id])
+        .await
+        .expect("Error getting projects")
+        .iter()
+        .map(|row| Project::from_row_ref(row).unwrap())
+        .collect::<Vec<Project>>()
+        .pop()
+        .ok_or(io::Error::new(
+            io::ErrorKind::Other,
+            "could not find project with the provided id",
+        ))
+
+}
+
+
+
 pub async fn create_project(client: &Client, project: Project) -> Result<Project, io::Error> {
     let statement = client
         .prepare("insert into projects (name, description, homepage, repository, priority, images, technologies) values ($1, $2, $3, $4, $5, $6, $7) returning *")
@@ -57,6 +83,52 @@ pub async fn create_project(client: &Client, project: Project) -> Result<Project
 }
 
 // add update project
+
+pub async fn update_project(
+    client: &Client,
+    project: Project
+) -> Result<Project, io::Error> {
+    let statement = client
+        .prepare(   "update projects
+                    set 
+                        name = $2,
+                        description = $3,
+                        homepage = $4,
+                        repository = $5,
+                        priority = $6,
+                        images = $7,
+                        technologies = $8 
+                    where id = $1
+                    returning *")
+        .await
+        .unwrap();
+
+    client
+        .query(
+            &statement,
+            &[
+                &project.id,
+                &project.name,
+                &project.description,
+                &project.homepage,
+                &project.repository,
+                &project.priority,
+                &project.images,
+                &project.technologies,
+            ],
+        )
+        .await
+        .expect("Error updating project")
+        .iter()
+        .map(|row| Project::from_row_ref(row).unwrap())
+        .collect::<Vec<Project>>()
+        .pop()
+        .ok_or(io::Error::new(
+            io::ErrorKind::Other,
+            "Error updating project",
+        ))
+
+}
 
 pub async fn log_in(client: &Client, user_name: String) -> Result<User, io::Error> {
     let statement = client
