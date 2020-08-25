@@ -147,6 +147,22 @@ pub async fn create_project(
 }
 
 // update project here
+pub async fn update_project(
+    id: Identity,
+    path: web::Path<(String)>,
+    db_pool: web::Data<Pool>,
+) -> impl Responder {
+    match id.identity() {
+        Some(_) => {
+
+            HttpResponse::Ok().body("it worked")
+        }
+        None => redirect_to_log_in(),
+    }
+}
+
+
+
 
 pub async fn index_template(id: Identity, hb: web::Data<Handlebars<'_>>) -> HttpResponse {
     let user = id.identity();
