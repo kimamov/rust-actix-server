@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+    <link rel="stylesheet" href="/api/static/css/project.css">
+
+</head>
+
+<body>
+    <nav>
+        <a href="/api/projectslist">projects</a>
+        <a href="/api/projectform">create</a>
+        {{#if user}}
+        <div class="user">
+            {{user}}
+        </div>
+        <a href="/api/logout">logout</a>
+        {{else}}
+        <a href="/api/login">login</a>
+        {{/if}}
+        <a href="/api/status">status</a>
+    </nav>
+    <main class="container projectsGrid">
+        <form class="editForm d-flex flex-column card py-4 px-2" action="/api/project/edit/{{project.id}}" enctype="multipart/form-data" method="post">
+            <h1 class="text-center">projectID: {{project.id}}</h1>
+            
+            <label for="title">title</label>
+            <input id="title" class="form-control" value="{{project.name}}" placeholder="name" type="text" name="title">
+            
+            <label for="desc">description</label>
+            <textarea class="form-control" id="desc" name="description" cols="30" rows="10">
+                {{project.description}}
+            </textarea>
+            
+            <label for="homepage">homepage</label>
+            <input id="homepage" class="form-control" value="{{project.homepage}}" placeholder="homepage" type="url" name="homepage">
+            
+            <label for="repository">repository</label>
+            <input id="repository" class="form-control" value="{{project.repository}}" placeholder="repo" type="url" name="repository">
+            
+            <label for="stack">technologies</label>
+            <input id="stack" class="form-control" value="{{#each project.technologies}}{{this}}, {{/each}}" placeholder="tech stack seperated by ," type="text" name="technologies">
+            
+            <label for="prio">priority (higher better)</label>
+            <input class="form-control" value="{{project.priority}}" placeholder="priority" type="number" name="priority">
+            
+            <label for="currentimages">add and remove images already on the server</label>
+            <input id="currentimages" class="form-control" value="{{#each project.images}}{{this}}, {{/each}}" placeholder="tech stack seperated by ," type="text" name="currentimages">
+            
+            <label for="image">add images</label>
+            <input class="form-control" value="test" id="image" type="file" name="images" multiple>
+            
+            <input class="btn btn-primary" type="submit" value="update">
+        </form>
+    </main>
+    <!-- Optional JavaScript -->
+    <!-- Popper.js first, then Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js" integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/" crossorigin="anonymous"></script>
+</body>
+
+</html>

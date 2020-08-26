@@ -1,0 +1,6 @@
+.editForm input, .editForm textarea{
+    margin-bottom: 1rem;
+}
+.editForm input[type=submit]{
+    margin-bottom: 0;
+}

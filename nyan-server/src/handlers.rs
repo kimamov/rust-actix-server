@@ -48,7 +48,7 @@ pub async fn get_projects(
     }
 }
 
-pub async fn get_project(
+/* pub async fn get_project(
     db_pool: web::Data<Pool>,
     req: HttpRequest,
 ) -> impl Responder {
@@ -62,9 +62,9 @@ pub async fn get_project(
 
     match result {
         Ok(project) => HttpResponse::Ok().json(project),
-        Err(_) => HttpResponse::NotFound().body(format!("could not find post with the provided ID: {}", id))
+        Err(_) => HttpResponse::NotFound().body(format!("could not find project with the provided ID: {}", id))
     }
-}
+} */
 
 pub async fn get_projects_template(
     id: Identity,
@@ -194,18 +194,21 @@ pub async fn update_project(
     id: Identity,
     mut payload: Multipart,
     db_pool: web::Data<Pool>,
+    req: HttpRequest
 ) -> impl Responder {
     match id.identity() {
         Some(_) => {
+            let project_id: i32 = req.match_info().query("projectid").parse().unwrap();
             let project = split_payload(payload.borrow_mut()).await;
 
             match project {
-                Ok(project) => {
+                Ok(mut project) => {
                     let client: Client = db_pool
                         .get()
                         .await
                         .expect("Error connecting to the database");
 
+                    project.id=Some(project_id);
                     let result = db::update_project(&client, project).await;
 
                     match result {

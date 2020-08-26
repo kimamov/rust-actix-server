@@ -49,16 +49,19 @@ async fn main() -> io::Result<()> {
                     .service(
                         web::resource("/projects")
                             .route(web::get().to(get_projects))
-                            .route(web::post().to(create_project)),
+                            //.route(web::post().to(create_project)),
                     )
                     .service(
                         web::resource("/project")
-                            .route(web::patch().to(create_project)),
+                            .route(web::post().to(create_project)),
                     )
                     .service(
                         web::resource("/project/{projectid}")
-                            .route(web::get().to(get_project_template))
-                            .route(web::patch().to(create_project)),
+                            .route(web::get().to(get_project_template)),
+                    )
+                    .service(
+                        web::resource("/project/edit/{projectid}")
+                            .route(web::post().to(update_project)),
                     )
                     .service(
                         web::resource("/projectslist").route(web::get().to(get_projects_template)),
